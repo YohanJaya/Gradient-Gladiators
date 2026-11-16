@@ -1,0 +1,44 @@
+# Gradle
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# Java
+*.class
+*.log
+hs_err_pid*
+
+# IDE
+.vscode/
+.idea/
+*.iml
+bin/
+out/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.ipynb_checkpoints/
+
+# RL training output (large files)
+training/runs/
+training/checkpoints/
+training/tensorboard/
+*.zip
+
+# Game telemetry logs
+analytics/data/raw/
+
+# OS
+.DS_Store
+Thumbs.db
+# Ignore Gradle project-specific cache directory
+.gradle
+
+# Ignore Gradle build output directory
+build
+
+# Ignore Kotlin plugin data
+.kotlin
