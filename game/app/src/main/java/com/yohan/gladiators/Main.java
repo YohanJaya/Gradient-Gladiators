@@ -15,6 +15,8 @@ public class Main extends SimpleApplication {
     @Override
     public void simpleInitApp() {
 
+        //floor box
+
         float floorWidth = 10f;
         float floorHeight = 1f;    
         float floorDepth = 10f;
@@ -29,6 +31,24 @@ public class Main extends SimpleApplication {
         floorGeometry.setMaterial(floorMaterial);
 
         rootNode.attachChild(floorGeometry);
+
+        //knight box
+
+        float knightWidth = 1f;
+        float knightHeight = 2f;
+        float knightDepth = 1f;
+
+        Box knight = new  Box(knightWidth, knightHeight, knightDepth);
+
+        Geometry knightGeo = new Geometry("Knight", knight);
+        Material knightMat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+
+        knightMat.setColor("Color", ColorRGBA.Blue);
+        knightGeo.setMaterial(knightMat);
+        knightGeo.setLocalTranslation(0, floorHeight + knightHeight, 0);
+
+        rootNode.attachChild(knightGeo);
+
 
 
         
