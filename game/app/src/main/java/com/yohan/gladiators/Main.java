@@ -1,69 +1,93 @@
 package com.yohan.gladiators;
 
 import com.jme3.app.SimpleApplication;
-import com.jme3.scene.shape.Box;
-import com.jme3.scene.Geometry;
 import com.jme3.material.Material;
+// import com.jme3.material.TechniqueDef.ShadowMode;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
-
+import com.jme3.scene.Geometry;
+import com.jme3.scene.shape.Box;
+import com.jme3.light.DirectionalLight;
+import com.jme3.light.AmbientLight;
+import com.jme3.shadow.DirectionalLightShadowRenderer;
+import com.jme3.renderer.queue.RenderQueue.ShadowMode;
 public class Main extends SimpleApplication {
+
+    private static final String UNSHADED = "Common/MatDefs/Misc/Unshaded.j3md";
 
     public static void main(String[] args) {
         new Main().start();
     }
 
+    private static final String LIGHTING = "Common/MatDefs/Light/Lighting.j3md";
+    
+
+    /**
+     * Creates a coloured box, attaches it to the scene, and returns it.
+     * @param name   The name of the geometry.
+     * @param width  Half-width of the box.
+     * @param height Half-height of the box.
+     * @param depth  Half-depth of the box.
+     * @param mat    Path to the material definition (.j3md).
+     * @param color  The colour of the box.
+     * @return The created Geometry, so the caller can move it.
+     */
+
+    private Geometry createBox(String name, float width, float height, float depth, String mat, ColorRGBA color) {
+
+        Box box = new Box(width, height, depth);
+        Geometry geometry = new Geometry(name, box);
+        Material material = new Material(assetManager, mat);
+
+        material.setColor("Diffuse", color);
+        material.setColor("Ambient", color);
+        material.setBoolean("UseMaterialColors", true);
+        geometry.setMaterial(material);
+
+        rootNode.attachChild(geometry);
+        return geometry;
+    }
+
+    
     @Override
     public void simpleInitApp() {
 
-        //floor box
+        // Floor
+        float floorHeight = 1f;
+        Geometry floorGeo = createBox("Floor", 10f, floorHeight, 10f, LIGHTING, ColorRGBA.Gray);
+        floorGeo.setShadowMode(ShadowMode.Receive);
 
-        float floorWidth = 10f;
-        float floorHeight = 1f;    
-        float floorDepth = 10f;
-
-        Box floor = new Box(floorWidth, floorHeight, floorDepth);
-
-        Geometry floorGeometry = new Geometry("Floor", floor);
-        Material floorMaterial = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        
-
-        floorMaterial.setColor("Color", ColorRGBA.Gray);
-        floorGeometry.setMaterial(floorMaterial);
-
-        rootNode.attachChild(floorGeometry);
-
-        //knight box
-
-        float knightWidth = 0.5f;
+        // Knight
         float knightHeight = 1f;
-        float knightDepth = 0.5f;
-
-        Box knight = new  Box(knightWidth, knightHeight, knightDepth);
-
-        Geometry knightGeo = new Geometry("Knight", knight);
-        Material knightMat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-
-        knightMat.setColor("Color", ColorRGBA.Blue);
-        knightGeo.setMaterial(knightMat);
+        Geometry knightGeo = createBox("Knight", 0.5f, knightHeight, 0.5f, LIGHTING, ColorRGBA.Blue);
         knightGeo.setLocalTranslation(0, floorHeight + knightHeight, 0);
+        knightGeo.setShadowMode(ShadowMode.Cast);
 
-        rootNode.attachChild(knightGeo);
+        DirectionalLight sun = new DirectionalLight();
+        sun.setDirection(new Vector3f(-1, -2, -3).normalizeLocal());
+        sun.setColor(ColorRGBA.White);
+        rootNode.addLight(sun);
 
-        
+        AmbientLight ambient = new AmbientLight();
+        ambient.setColor(ColorRGBA.White.mult(0.3f));
+        rootNode.addLight(ambient);
+
+        DirectionalLightShadowRenderer shadowRenderer = new DirectionalLightShadowRenderer(assetManager, 1024, 3);
+        shadowRenderer.setLight(sun);
+        viewPort.addProcessor(shadowRenderer);
+
         // Third-person camera
-        flyCam.setEnabled(false);                                  // stop WASD/mouse from moving the camera
+        // flyCam.setEnabled(false);
 
-        Vector3f knightPos = knightGeo.getLocalTranslation();      // where the Knight is
-        Vector3f offset = new Vector3f(0, 4, 8);                   // 4 up, 8 back
-        Vector3f camPos = knightPos.add(offset);                   // camera = Knight + offset
+        flyCam.setMoveSpeed(10f);
 
-        cam.setLocation(camPos);                                   // put the camera there
-        cam.lookAt(knightPos, Vector3f.UNIT_Y);                    // look AT the Knight, keep Y as "up"
-
-                
-
+        Vector3f knightPos = knightGeo.getLocalTranslation();
+        Vector3f offset = new Vector3f(0, 4, 8);
+        cam.setLocation(knightPos.add(offset));
+        cam.lookAt(knightPos, Vector3f.UNIT_Y);
 
         
+
+
     }
 }
