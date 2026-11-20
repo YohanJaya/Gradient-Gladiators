@@ -15,13 +15,16 @@ import com.jme3.scene.Node;
 public abstract class Entity {
     protected Node node;
 
+    // Creates a scene node with the given name
     public Entity(String name) {
         node = new Node(name);
     }
 
+    // Returns the scene node so it can be attached to the scene graph
     public Node getNode() {
         return node;
     }
 
+    // Called every frame with time-per-frame; subclasses define behaviour
     public abstract void update(float tpf);
 }

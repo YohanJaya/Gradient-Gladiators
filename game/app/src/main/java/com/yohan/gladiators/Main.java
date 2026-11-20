@@ -34,6 +34,7 @@ public class Main extends SimpleApplication {
      * @return The created Geometry, so the caller can move it.
      */
 
+    // Creates a coloured box, attaches it to the scene, and returns it
     private Geometry createBox(String name, float width, float height, float depth, String mat, ColorRGBA color) {
 
         Box box = new Box(width, height, depth);
@@ -49,7 +50,7 @@ public class Main extends SimpleApplication {
         return geometry;
     }
 
-    
+    // Called once at startup: builds the scene, spawns the knight, sets up lights and camera
     @Override
     public void simpleInitApp() {
 
@@ -58,24 +59,32 @@ public class Main extends SimpleApplication {
         Geometry floorGeo = createBox("Floor", 10f, floorHeight, 10f, LIGHTING, ColorRGBA.Gray);
         floorGeo.setShadowMode(ShadowMode.Receive);
 
-        // Knight
+        // Knight body and facing indicator (red nose)
         float knightHeight = 1f;
         Geometry knightGeo = createBox("Knight", 0.5f, knightHeight, 0.5f, LIGHTING, ColorRGBA.Blue);
-        //knightGeo.setLocalTranslation(0, floorHeight + knightHeight, 0);
         knightGeo.setShadowMode(ShadowMode.Cast);
 
         knight = new Player("Knight", 5f);
         knight.registerInput(inputManager);
-        
+
         knight.getNode().attachChild(knightGeo);
         knight.getNode().setLocalTranslation(0, floorHeight + knightHeight, 0);
+
+        Geometry nose = createBox("Nose", 0.15f, 0.15f, 0.15f, LIGHTING, ColorRGBA.Red);
+        nose.setLocalTranslation(0, 0.5f, -0.6f);
+        knight.getNode().attachChild(nose);
+
         rootNode.attachChild(knight.getNode());
 
+        inputManager.setCursorVisible(false);
+
+        // Directional sun light with shadows
         DirectionalLight sun = new DirectionalLight();
         sun.setDirection(new Vector3f(-1, -2, -3).normalizeLocal());
         sun.setColor(ColorRGBA.White);
         rootNode.addLight(sun);
 
+        // Low-level ambient fill so shadowed areas aren't pitch black
         AmbientLight ambient = new AmbientLight();
         ambient.setColor(ColorRGBA.White.mult(0.3f));
         rootNode.addLight(ambient);
@@ -84,26 +93,26 @@ public class Main extends SimpleApplication {
         shadowRenderer.setLight(sun);
         viewPort.addProcessor(shadowRenderer);
 
-        // Third-person camera
+
         flyCam.setEnabled(false);
 
-        //flyCam.setMoveSpeed(10f);
-
-        Vector3f knightPos = knight.getNode().getLocalTranslation();
-        Vector3f offset = new Vector3f(0, 4, 8);
-        cam.setLocation(knightPos.add(offset));
-        cam.lookAt(knightPos, Vector3f.UNIT_Y);
-
-
         
-
-        
-
 
     }
 
+    // Called every frame: delegates to the knight's update logic
     @Override
     public void simpleUpdate(float tpf) {
         knight.update(tpf);
-}
+
+        Vector3f knightPos = knight.getNode().getLocalTranslation();
+        Vector3f offset = new Vector3f(0, 4, 8);
+
+        offset = knight.getNode().getLocalRotation().mult(offset);
+
+
+        cam.setLocation(knightPos.add(offset));
+        cam.lookAt(knightPos.add(0, 1, 0), Vector3f.UNIT_Y);
+
+    }
 }
