@@ -64,7 +64,9 @@ public class Main extends SimpleApplication {
         //knightGeo.setLocalTranslation(0, floorHeight + knightHeight, 0);
         knightGeo.setShadowMode(ShadowMode.Cast);
 
-        knight = new Player("Knight");
+        knight = new Player("Knight", 5f);
+        knight.registerInput(inputManager);
+        
         knight.getNode().attachChild(knightGeo);
         knight.getNode().setLocalTranslation(0, floorHeight + knightHeight, 0);
         rootNode.attachChild(knight.getNode());
@@ -83,9 +85,9 @@ public class Main extends SimpleApplication {
         viewPort.addProcessor(shadowRenderer);
 
         // Third-person camera
-        // flyCam.setEnabled(false);
+        flyCam.setEnabled(false);
 
-        flyCam.setMoveSpeed(10f);
+        //flyCam.setMoveSpeed(10f);
 
         Vector3f knightPos = knight.getNode().getLocalTranslation();
         Vector3f offset = new Vector3f(0, 4, 8);
