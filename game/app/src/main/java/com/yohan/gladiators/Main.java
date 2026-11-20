@@ -20,6 +20,7 @@ public class Main extends SimpleApplication {
     }
 
     private static final String LIGHTING = "Common/MatDefs/Light/Lighting.j3md";
+    private Player knight;
     
 
     /**
@@ -60,8 +61,13 @@ public class Main extends SimpleApplication {
         // Knight
         float knightHeight = 1f;
         Geometry knightGeo = createBox("Knight", 0.5f, knightHeight, 0.5f, LIGHTING, ColorRGBA.Blue);
-        knightGeo.setLocalTranslation(0, floorHeight + knightHeight, 0);
+        //knightGeo.setLocalTranslation(0, floorHeight + knightHeight, 0);
         knightGeo.setShadowMode(ShadowMode.Cast);
+
+        knight = new Player("Knight");
+        knight.getNode().attachChild(knightGeo);
+        knight.getNode().setLocalTranslation(0, floorHeight + knightHeight, 0);
+        rootNode.attachChild(knight.getNode());
 
         DirectionalLight sun = new DirectionalLight();
         sun.setDirection(new Vector3f(-1, -2, -3).normalizeLocal());
@@ -81,13 +87,21 @@ public class Main extends SimpleApplication {
 
         flyCam.setMoveSpeed(10f);
 
-        Vector3f knightPos = knightGeo.getLocalTranslation();
+        Vector3f knightPos = knight.getNode().getLocalTranslation();
         Vector3f offset = new Vector3f(0, 4, 8);
         cam.setLocation(knightPos.add(offset));
         cam.lookAt(knightPos, Vector3f.UNIT_Y);
+
+
+        
 
         
 
 
     }
+
+    @Override
+    public void simpleUpdate(float tpf) {
+        knight.update(tpf);
+}
 }
