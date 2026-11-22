@@ -65,8 +65,15 @@ public class Player extends Character implements ActionListener, AnalogListener 
             direction.normalizeLocal();
             direction = node.getLocalRotation().mult(direction);
 
-            float timeStep = dashing ? tpf * DASH_SPEED_MULTIPLIER : tpf;
-            move(direction, timeStep);
+            if (dashing) {
+                float dashtpf = tpf * DASH_SPEED_MULTIPLIER;
+                move(direction, dashtpf);
+                
+            }
+            else {
+                move(direction, tpf);
+            }
+            
         }
     }
 
