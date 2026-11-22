@@ -34,7 +34,7 @@ public class Main extends SimpleApplication {
      * @return The created Geometry, so the caller can move it.
      */
 
-    // Creates a coloured box, attaches it to the scene, and returns it
+    // Creates a coloured box, attaches it to the scene, and returns it (Helper Method)
     private Geometry createBox(String name, float width, float height, float depth, String mat, ColorRGBA color) {
 
         Box box = new Box(width, height, depth);
