@@ -1,3 +1,4 @@
+package com.yohan.gladiators;
 public class Health {
     private float max;
     private float current;
@@ -22,7 +23,7 @@ public class Health {
     }
 
     public boolean isDead() {
-        if (this.current == 0 ) {
+        if (this.current <= 0 ) {
             return true;
         } else {
             return false;   
@@ -31,5 +32,7 @@ public class Health {
 
     public float getFraction() {
         return this.current / this.max;
+
+
     }
 }

@@ -18,26 +18,20 @@ public class Player extends Character implements ActionListener, AnalogListener 
     private static final float DASH_COOLDOWN = 5f;          // wait time, counted from the dash start
     private static final float DASH_SPEED_MULTIPLIER = 2.5f;
 
-    // Dash timers (they count DOWN toward 0)
-    private float dashTimeLeft = 0f;
-    private float cooldownLeft = 0f;
 
-    public Player(String name, float speed) {
-        super(name, speed);
+    Dash dashAbility = new Dash(DASH_COOLDOWN, DASH_DURATION, DASH_SPEED_MULTIPLIER);
+
+    public Player(String name, float speed, Health health) {
+        super(name, speed, health);
     }
 
     // Builds a movement vector from held keys, rotates it to face the knight's direction, then moves
     @Override
     public void update(float tpf) {
-        // 1. Count both timers down (never below 0)
-        if (dashTimeLeft > 0) {
-            dashTimeLeft -= tpf;
-        }
-        if (cooldownLeft > 0) {
-            cooldownLeft -= tpf;
-        }
 
-        // 2. Build the direction from the held keys
+        dashAbility.update(tpf); 
+        
+
         Vector3f direction = new Vector3f(0, 0, 0);
 
         if (forward) {
@@ -53,7 +47,7 @@ public class Player extends Character implements ActionListener, AnalogListener 
             direction.x += 1;
         }
 
-        boolean dashing = dashTimeLeft > 0;
+        boolean dashing = dashAbility.isActive();
 
         // 3. While dashing with no keys held, dash straight forward
         if (dashing && direction.lengthSquared() == 0) {
@@ -66,7 +60,7 @@ public class Player extends Character implements ActionListener, AnalogListener 
             direction = node.getLocalRotation().mult(direction);
 
             if (dashing) {
-                float dashtpf = tpf * DASH_SPEED_MULTIPLIER;
+                float dashtpf = tpf * dashAbility.getSpeedMultiplier();
                 move(direction, dashtpf);
                 
             }
@@ -93,10 +87,9 @@ public class Player extends Character implements ActionListener, AnalogListener 
                 new KeyTrigger(KeyInput.KEY_RIGHT));
         inputManager.addListener(this, "TurnLeft", "TurnRight");
 
-        inputManager.addMapping("Dash",
-                new KeyTrigger(KeyInput.KEY_RSHIFT),
-                new KeyTrigger(KeyInput.KEY_LSHIFT));
+        inputManager.addMapping("Dash", new KeyTrigger(KeyInput.KEY_RSHIFT), new KeyTrigger(KeyInput.KEY_LSHIFT));
         inputManager.addListener(this, "Dash");
+
     }
 
     // Updates movement flags when keys are pressed or released
@@ -111,20 +104,10 @@ public class Player extends Character implements ActionListener, AnalogListener 
         } else if (name.equals("Right")) {
             right = isPressed;
         } else if (name.equals("Dash") && isPressed) {
-            startDash();
+            dashAbility.use(this);
         }
     }
 
-    // Starts the dash only if the cooldown is finished
-    private void startDash() {
-        if (cooldownLeft <= 0) {
-            dashTimeLeft = DASH_DURATION;
-            cooldownLeft = DASH_COOLDOWN;
-            System.out.println("Dash started");
-        } else {
-            System.out.println("Dash not ready: " + cooldownLeft + "s left");
-        }
-    }
 
     // Turns the knight left or right based on mouse X movement or arrow keys
     @Override

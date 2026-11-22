@@ -64,7 +64,9 @@ public class Main extends SimpleApplication {
         Geometry knightGeo = createBox("Knight", 0.5f, knightHeight, 0.5f, LIGHTING, ColorRGBA.Blue);
         knightGeo.setShadowMode(ShadowMode.Cast);
 
-        knight = new Player("Knight", 5f);
+        Health health = new Health(100f);
+
+        knight = new Player("Knight", 5f, health);
         knight.registerInput(inputManager);
 
         knight.getNode().attachChild(knightGeo);
