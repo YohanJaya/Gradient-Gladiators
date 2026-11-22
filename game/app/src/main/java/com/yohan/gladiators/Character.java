@@ -38,7 +38,7 @@ public abstract class Character extends Entity {
     public void setHealth(Health health) {
         this.health = health;
     }
-    public void takeDamaged(float amount) {
+    public void takeDamage(float amount) {
         health.damage(amount);
     }
     public void heal(float amount) {
