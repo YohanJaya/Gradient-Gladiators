@@ -85,6 +85,7 @@ public class Main extends SimpleApplication {
         //Brute Character
         Health bruteHealth = new Health(100f);
         brute = new Brute("Brute", 3f, bruteHealth);
+        brute.setBrain(new BruteInputBrain(knight));
 
         Geometry bruteGeo = createBox("Brute", 0.5f, knightHeight, 0.5f, LIGHTING, ColorRGBA.Red);
         bruteGeo.setShadowMode(ShadowMode.Cast);
