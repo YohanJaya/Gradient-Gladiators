@@ -4,9 +4,9 @@ import java.util.List;
 
 public class Brute extends Character {
 
-    private float SWORD_SWING_COOLDOWN = 1.0f; // seconds
-    private float SWORD_SWING_RANGE = 5.0f; // units
-    private float SWORD_SWING_DAMAGE = 10.0f; // damage points
+    private static final float SWORD_SWING_COOLDOWN = 1.0f; // seconds
+    private static final float SWORD_SWING_RANGE = 2.0f; // units
+    private static final float SWORD_SWING_DAMAGE = 10.0f; // damage points
 
     private List<Character> TARGETS = new ArrayList<>(); // This should be set to the list of potential targets in the game
     
@@ -21,4 +21,6 @@ public class Brute extends Character {
     public void addTarget(Character target) {
         TARGETS.add(target);
     }
+    
+
 }

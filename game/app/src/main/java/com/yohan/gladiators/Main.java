@@ -21,6 +21,8 @@ public class Main extends SimpleApplication {
 
     private static final String LIGHTING = "Common/MatDefs/Light/Lighting.j3md";
     private Player knight;
+    private Brute brute;
+    private float lastBruteHealth = -1;
     
 
     /**
@@ -80,6 +82,20 @@ public class Main extends SimpleApplication {
 
         inputManager.setCursorVisible(false);
 
+        //Brute Character
+        Health bruteHealth = new Health(100f);
+        brute = new Brute("Brute", 3f, bruteHealth);
+
+        Geometry bruteGeo = createBox("Brute", 0.5f, knightHeight, 0.5f, LIGHTING, ColorRGBA.Red);
+        bruteGeo.setShadowMode(ShadowMode.Cast);
+        brute.getNode().attachChild(bruteGeo);
+
+        brute.getNode().setLocalTranslation(5, floorHeight + knightHeight, -5);
+        rootNode.attachChild(brute.getNode());
+
+        brute.addTarget(knight);
+        knight.addTarget(brute);
+
         // Directional sun light with shadows
         DirectionalLight sun = new DirectionalLight();
         sun.setDirection(new Vector3f(-1, -2, -3).normalizeLocal());
@@ -106,6 +122,13 @@ public class Main extends SimpleApplication {
     @Override
     public void simpleUpdate(float tpf) {
         knight.update(tpf);
+        brute.update(tpf);
+
+        float current = brute.getHealth().getCurrent();
+        if (current != lastBruteHealth) {
+            System.out.println("Brute Health: " + current);
+            lastBruteHealth = current;
+}
 
         Vector3f knightPos = knight.getNode().getLocalTranslation();
         Vector3f offset = new Vector3f(0, 4, 8);

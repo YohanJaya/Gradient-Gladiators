@@ -35,4 +35,8 @@ public class Health {
 
 
     }
+
+    public float getCurrent() {
+        return this.current;
+    }
 }
