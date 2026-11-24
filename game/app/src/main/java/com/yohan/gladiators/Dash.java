@@ -30,7 +30,6 @@ public class Dash extends Ability {
         }
 
     }
-
     public boolean isActive() {
         if(timeLeft > 0){
             return true;

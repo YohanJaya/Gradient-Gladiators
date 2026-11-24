@@ -67,7 +67,7 @@ public class Main extends SimpleApplication {
         Health health = new Health(100f);
 
         knight = new Player("Knight", 5f, health);
-        knight.registerInput(inputManager);
+        knight.setBrain(new PlayerInputBrain(inputManager));
 
         knight.getNode().attachChild(knightGeo);
         knight.getNode().setLocalTranslation(0, floorHeight + knightHeight, 0);
