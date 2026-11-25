@@ -87,6 +87,8 @@ public class PlayerInputBrain implements Brain, ActionListener, AnalogListener {
         if (left)     direction.x -= 1;
         if (right)    direction.x += 1;
 
+        direction.normalizeLocal();
+
         Action action = new Action(direction, turnAmount, attackRequested, dashRequested);
 
         // Clear the one-time wishes, so one key press causes only ONE attack or dash

@@ -127,7 +127,7 @@ public class Main extends SimpleApplication {
 
         float current = brute.getHealth().getCurrent();
         if (current != lastBruteHealth) {
-            System.out.println("Brute Health: " + current);
+            //System.out.println("Brute Health: " + current);
             lastBruteHealth = current;
 }
 
