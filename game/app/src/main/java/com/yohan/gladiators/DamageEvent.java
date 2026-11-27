@@ -6,20 +6,20 @@ package com.yohan.gladiators;
 
 public class DamageEvent{
 
-    Character hurt;
+    Character hurtCharacter;
     float damageAmount;
     float currentHealth;
     float maxHealth;
 
-    public DamageEvent(Character hurt, float damageAmount, float currentHealth, float maxHealth) {
-        this.hurt = hurt;
+    public DamageEvent(Character hurtCharacter, float damageAmount, float currentHealth, float maxHealth) {
+        this.hurtCharacter = hurtCharacter;
         this.damageAmount = damageAmount;
         this.currentHealth = currentHealth;
         this.maxHealth = maxHealth;
     }
 
-    public Character getHurt() {
-        return hurt;
+    public Character getHurtCharacter() {
+        return hurtCharacter;
     }
 
     public float getDamageAmount() {

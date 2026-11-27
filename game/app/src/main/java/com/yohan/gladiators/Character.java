@@ -8,6 +8,7 @@ public abstract class Character extends Entity{
     private Brain brain;
     private Dash dashAbility;    
     private SwordSwing swordSwingAbility;
+    private EventBus eventBus;
 
 
     // Sets name and movement speed
@@ -23,6 +24,11 @@ public abstract class Character extends Entity{
 
     public void setSpeed(float speed) {
         this.speed = speed;
+    }
+
+    public void setEventBus(EventBus eventBus) {
+        this.eventBus = eventBus;
+        
     }
 
     // Translates the node along the given direction scaled by speed and tpf
@@ -50,6 +56,8 @@ public abstract class Character extends Entity{
     }
     public void takeDamage(float amount) {
         health.damage(amount);
+        DamageEvent damageEvent= new DamageEvent(this, amount, this.getHealth().getCurrent(), this.getHealth().getMax());
+        eventBus.publish(damageEvent);
     }
     public void heal(float amount) {
         health.heal(amount);

@@ -25,6 +25,7 @@ public class Main extends SimpleApplication {
     private float lastKnightHealth = -1;
     private HealthBar knightBar;
     private HealthBar bruteBar;
+    private EventBus eventBus = new EventBus();
 
     /**
      * Creates a coloured box, attaches it to the scene, and returns it.
@@ -72,6 +73,7 @@ public class Main extends SimpleApplication {
         knight = new Player("Knight", 5f, health);
         knight.setBrain(new PlayerInputBrain(inputManager));
 
+
         knight.getNode().attachChild(knightGeo);
         knight.getNode().setLocalTranslation(0, floorHeight + knightHeight, 0);
 
@@ -85,6 +87,7 @@ public class Main extends SimpleApplication {
 
         //Brute Character
         Health bruteHealth = new Health(100f);
+    
         brute = new Brute("Brute", 3f, bruteHealth);
         brute.setBrain(new BruteInputBrain(knight));
 
@@ -98,9 +101,15 @@ public class Main extends SimpleApplication {
         brute.addTarget(knight);
         knight.addTarget(brute);
 
+        knightBar = new HealthBar(assetManager, guiNode, 10, settings.getHeight() - 30, 200, 20, knight);
+        bruteBar = new HealthBar(assetManager, guiNode, 10, settings.getHeight() - 60, 200, 20, brute);
 
-        knightBar = new HealthBar(assetManager, guiNode, 20, settings.getHeight() - 40, 300, 20);
-        bruteBar  = new HealthBar(assetManager, guiNode, settings.getWidth() - 320, settings.getHeight() - 40, 300, 20);
+        knight.setEventBus(eventBus);
+        brute.setEventBus(eventBus);
+
+
+        eventBus.subscribe(knightBar);
+        eventBus.subscribe(bruteBar);
 
         
         // Directional sun light with shadows
