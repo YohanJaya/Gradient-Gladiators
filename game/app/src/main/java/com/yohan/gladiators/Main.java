@@ -22,8 +22,9 @@ public class Main extends SimpleApplication {
     private static final String LIGHTING = "Common/MatDefs/Light/Lighting.j3md";
     private Player knight;
     private Brute brute;
-    private float lastBruteHealth = -1;
-    
+    private float lastKnightHealth = -1;
+    private HealthBar knightBar;
+    private HealthBar bruteBar;
 
     /**
      * Creates a coloured box, attaches it to the scene, and returns it.
@@ -97,6 +98,11 @@ public class Main extends SimpleApplication {
         brute.addTarget(knight);
         knight.addTarget(brute);
 
+
+        knightBar = new HealthBar(assetManager, guiNode, 20, settings.getHeight() - 40, 300, 20);
+        bruteBar  = new HealthBar(assetManager, guiNode, settings.getWidth() - 320, settings.getHeight() - 40, 300, 20);
+
+        
         // Directional sun light with shadows
         DirectionalLight sun = new DirectionalLight();
         sun.setDirection(new Vector3f(-1, -2, -3).normalizeLocal());
@@ -104,7 +110,7 @@ public class Main extends SimpleApplication {
         rootNode.addLight(sun);
 
         // Low-level ambient fill so shadowed areas aren't pitch black
-        AmbientLight ambient = new AmbientLight();
+        AmbientLight ambient = new AmbientLight();  
         ambient.setColor(ColorRGBA.White.mult(0.3f));
         rootNode.addLight(ambient);
 
@@ -125,11 +131,14 @@ public class Main extends SimpleApplication {
         knight.update(tpf);
         brute.update(tpf);
 
-        float current = brute.getHealth().getCurrent();
-        if (current != lastBruteHealth) {
-            //System.out.println("Brute Health: " + current);
-            lastBruteHealth = current;
-}
+        float current = knight.getHealth().getCurrent();
+        if (current != lastKnightHealth) {
+            System.out.println("Knight Health: " + current);
+            lastKnightHealth = current;
+        }       
+
+        knightBar.setFraction(knight.getHealth().getCurrent() / knight.getHealth().getMax());
+        bruteBar.setFraction(brute.getHealth().getCurrent() / brute.getHealth().getMax());
 
         Vector3f knightPos = knight.getNode().getLocalTranslation();
         Vector3f offset = new Vector3f(0, 4, 8);

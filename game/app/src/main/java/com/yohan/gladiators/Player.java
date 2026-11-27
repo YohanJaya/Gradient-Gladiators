@@ -13,8 +13,9 @@ public class Player extends Character{
 
     //Sword Swing Setting
     private static final float SWORD_COOLDOWN = 1f;
+
     private static final float RANGE = 5f;
-    private static final float DAMAGE = 10f;
+    private static final float DAMAGE = 50f;
     private final List<Character> TARGETS = new ArrayList<>(); // This should be set to the list of potential targets in the game
 
 

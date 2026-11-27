@@ -39,4 +39,7 @@ public class Health {
     public float getCurrent() {
         return this.current;
     }
+    public float getMax() {
+        return this.max;
+    }
 }

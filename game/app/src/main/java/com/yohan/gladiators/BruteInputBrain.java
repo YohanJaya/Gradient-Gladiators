@@ -9,8 +9,8 @@ public class BruteInputBrain implements Brain {
 
     private final Character target;   // who to chase (the Knight)
 
-    private final float attackStartRange = 2.0f;  // start attacking below this distance
-    private final float attackStopRange  = 2.5f;  // go back to chasing above this distance
+    private final float attackStartRange = 1.5f;  // start attacking below this distance
+    private final float attackStopRange  = 2.0f;  // go back to chasing above this distance
 
     private State state = State.CHASE;
 
