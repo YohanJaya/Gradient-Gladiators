@@ -16,7 +16,7 @@ public class PlayerInputBrain implements Brain, ActionListener, AnalogListener {
     private boolean forward, backward, left, right;
 
     // One-time wishes: set when the key is pressed, cleared after decide() reads them
-    private boolean attackRequested, dashRequested;
+    private boolean attackRequested, dashRequested,blockRequested;
 
     // Mouse/arrow turning collected since the last frame
     private float turnAmount; // Default implementation does nothing; subclasses can override
@@ -45,9 +45,13 @@ public class PlayerInputBrain implements Brain, ActionListener, AnalogListener {
                 new KeyTrigger(KeyInput.KEY_RSHIFT), new KeyTrigger(KeyInput.KEY_LSHIFT));
         inputManager.addListener(this, "Dash");
 
-        inputManager.addMapping("Attack", new KeyTrigger(KeyInput.KEY_SPACE));
+        inputManager.addMapping("Attack", new KeyTrigger(KeyInput.KEY_M));
         inputManager.addListener(this, "Attack");
+
+        inputManager.addMapping("Block", new KeyTrigger(KeyInput.KEY_SPACE));
+        inputManager.addListener(this, "Block");
     }
+
 
     // Key pressed or released: only REMEMBER it, do not act on it
     @Override
@@ -64,6 +68,8 @@ public class PlayerInputBrain implements Brain, ActionListener, AnalogListener {
             dashRequested = true;
         } else if (name.equals("Attack") && isPressed) {
             attackRequested = true;
+        }else if(name.equals("Block") && isPressed){
+            blockRequested = true;
         }
     }
 
@@ -89,11 +95,12 @@ public class PlayerInputBrain implements Brain, ActionListener, AnalogListener {
 
         direction.normalizeLocal();
 
-        Action action = new Action(direction, turnAmount, attackRequested, dashRequested);
+        Action action = new Action(direction, turnAmount, attackRequested, dashRequested, blockRequested);
 
         // Clear the one-time wishes, so one key press causes only ONE attack or dash
         attackRequested = false;
         dashRequested = false;
+        blockRequested = false;
         turnAmount = 0f;
 
         return action;

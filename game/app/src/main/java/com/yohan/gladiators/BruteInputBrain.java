@@ -5,7 +5,7 @@ import com.jme3.math.Vector3f;
 
 public class BruteInputBrain implements Brain {
 
-    private enum State { CHASE, ATTACK }
+    private enum State { CHASE, ATTACK, BLOCK }
 
     private final Character target;   // who to chase (the Knight)
 
@@ -40,7 +40,7 @@ public class BruteInputBrain implements Brain {
             state = State.ATTACK;
         } else if (state == State.ATTACK && distance > attackStopRange) {
             state = State.CHASE;
-        }
+        } 
 
         if (state != oldState) {
             System.out.println("Brute state: " + state);   // temporary, remove later
@@ -49,9 +49,9 @@ public class BruteInputBrain implements Brain {
         // 4. Build the Action for the current state
         if (state == State.CHASE) {
             Vector3f forward = new Vector3f(0, 0, -1);   // relative to facing = walk forward
-            return new Action(forward, turnAngle, false, false);
+            return new Action(forward, turnAngle, false, false, false);
         } else {
-            return new Action(Vector3f.ZERO, turnAngle, true, false);   // stand still, face, attack
+            return new Action(Vector3f.ZERO, turnAngle, true, false, false);   // stand still, face, attack
         }
     }
 }
