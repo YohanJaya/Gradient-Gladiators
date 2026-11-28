@@ -41,6 +41,7 @@ public class Main extends SimpleApplication {
     // Creates a coloured box, attaches it to the scene, and returns it (Helper Method)
     private Geometry createBox(String name, float width, float height, float depth, String mat, ColorRGBA color) {
 
+
         Box box = new Box(width, height, depth);
         Geometry geometry = new Geometry(name, box);
         Material material = new Material(assetManager, mat);
@@ -59,9 +60,15 @@ public class Main extends SimpleApplication {
     public void simpleInitApp() {
 
         // Floor
-        float floorHeight = 1f;
-        Geometry floorGeo = createBox("Floor", 10f, floorHeight, 10f, LIGHTING, ColorRGBA.Gray);
-        floorGeo.setShadowMode(ShadowMode.Receive);
+        float floorHeight = 0.1f;
+        // Geometry floorGeo = createBox("Floor", 10f, floorHeight, 10f, LIGHTING, ColorRGBA.Gray);
+        // floorGeo.setShadowMode(ShadowMode.Receive);
+
+        GameConfig config = new GameConfig("game.properties");
+        System.out.println(config.getInt("arena.size"));
+
+        Arena arena = new Arena(assetManager, config);
+        rootNode.attachChild(arena.getRoot());
 
         // Knight body and facing indicator (red nose)
         float knightHeight = 1f;
