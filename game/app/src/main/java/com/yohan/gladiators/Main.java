@@ -88,7 +88,7 @@ public class Main extends SimpleApplication {
         knight.setEventBus(eventBus);
         eventBus.subscribe(knightBar);
 
-        waveManager = new WaveManager(enemyFactory, knight, config);
+        waveManager = new WaveManager(enemyFactory, knight, config,1);
         waveManager.startWave(1);
 
         // Directional sun light with shadows
