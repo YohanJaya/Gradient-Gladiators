@@ -144,6 +144,10 @@ public abstract class Character extends Entity {
         this.brain = brain;
     }
 
+    public Brain getBrain() {
+        return brain;
+    }
+
     public void setSwordSwing(SwordSwing swordSwing) {
         this.swordSwingAbility = swordSwing;
     }

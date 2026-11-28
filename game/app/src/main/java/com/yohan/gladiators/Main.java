@@ -16,7 +16,7 @@ public class Main extends SimpleApplication {
     private static final String LIGHTING = "Common/MatDefs/Light/Lighting.j3md";
 
     private Player knight;
-    private Brute brute;
+    private WaveManager waveManager;
     private EventBus eventBus = new EventBus();
 
     public static void main(String[] args) {
@@ -88,11 +88,8 @@ public class Main extends SimpleApplication {
         knight.setEventBus(eventBus);
         eventBus.subscribe(knightBar);
 
-        // Brute (the factory builds it and creates its health bar)
-        brute = enemyFactory.createBrute(new Vector3f(5, floorHeight + knightHeight, -5), knight);
-
-        brute.addTarget(knight);
-        knight.addTarget(brute);
+        waveManager = new WaveManager(enemyFactory, knight, config);
+        waveManager.startWave(1);
 
         // Directional sun light with shadows
         DirectionalLight sun = new DirectionalLight();
@@ -116,7 +113,8 @@ public class Main extends SimpleApplication {
     @Override
     public void simpleUpdate(float tpf) {
         knight.update(tpf);
-        brute.update(tpf);
+        
+        waveManager.update(tpf);
 
         Vector3f knightPos = knight.getNode().getLocalTranslation();
         Vector3f offset = new Vector3f(0, 4, 8);

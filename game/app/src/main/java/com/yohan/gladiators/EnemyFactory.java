@@ -30,7 +30,7 @@ public class EnemyFactory {
 
     public Brute createBrute(Vector3f position, Character target) {
 
-        Health bruteHealth = new Health(config.getFloat("brute.health"));
+        Health bruteHealth = new Health(config.getFloat("brute.maxHealth"));
         float speed = config.getFloat("brute.speed");
         Brain bruteBrain = new BruteInputBrain(target);
 

@@ -2,6 +2,7 @@ package com.yohan.gladiators;
 
 import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
+import java.util.List;
 
 public class BruteInputBrain implements Brain {
 
@@ -14,8 +15,18 @@ public class BruteInputBrain implements Brain {
 
     private State state = State.CHASE;
 
+    private List<Brute> allBrutes;
+    private float separationMinDistance = 1.5f;
+    private float separationStrength    = 0.6f;
+
     public BruteInputBrain(Character target) {
         this.target = target;
+    }
+
+    public void setAllBrutes(List<Brute> brutes, float minDist, float strength) {
+        this.allBrutes = brutes;
+        this.separationMinDistance = minDist;
+        this.separationStrength = strength;
     }
 
     @Override
@@ -46,10 +57,32 @@ public class BruteInputBrain implements Brain {
             System.out.println("Brute state: " + state);   // temporary, remove later
         }
 
-        // 4. Build the Action for the current state
+        // 4. Separation: push away from nearby brutes
+        Vector3f push = new Vector3f(0, 0, 0);
+        if (allBrutes != null) {
+            for (Brute other : allBrutes) {
+                if (other.getNode() == self.getNode()) continue;
+                Vector3f otherPos = other.getNode().getWorldTranslation();
+                Vector3f diff = brutePos.subtract(otherPos);
+                diff.y = 0;
+                float dist = diff.length();
+                if (dist > 0 && dist < separationMinDistance) {
+                    push.addLocal(diff.normalizeLocal());
+                }
+            }
+        }
+
+        // 5. Build the Action for the current state
         if (state == State.CHASE) {
-            Vector3f forward = new Vector3f(0, 0, -1);   // relative to facing = walk forward
-            return new Action(forward, turnAngle, false, false, false);
+            Vector3f worldDir = toTarget.length() > 0 ? toTarget.normalize() : new Vector3f(0, 0, -1);
+            worldDir.addLocal(push.mult(separationStrength));
+            if (worldDir.lengthSquared() > 0) worldDir.normalizeLocal();
+
+            // Convert world direction into local space (relative to brute's facing)
+            Vector3f localDir = self.getNode().getLocalRotation().inverse().mult(worldDir);
+            localDir.y = 0;
+
+            return new Action(localDir, turnAngle, false, false, false);
         } else {
             return new Action(Vector3f.ZERO, turnAngle, true, false, false);   // stand still, face, attack
         }
