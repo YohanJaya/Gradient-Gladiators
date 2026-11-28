@@ -1,34 +1,30 @@
 package com.yohan.gladiators;
 
 import com.jme3.app.SimpleApplication;
+import com.jme3.light.AmbientLight;
+import com.jme3.light.DirectionalLight;
 import com.jme3.material.Material;
-// import com.jme3.material.TechniqueDef.ShadowMode;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
+import com.jme3.renderer.queue.RenderQueue.ShadowMode;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.shape.Box;
-import com.jme3.light.DirectionalLight;
-import com.jme3.light.AmbientLight;
 import com.jme3.shadow.DirectionalLightShadowRenderer;
-import com.jme3.renderer.queue.RenderQueue.ShadowMode;
+
 public class Main extends SimpleApplication {
 
-    private static final String UNSHADED = "Common/MatDefs/Misc/Unshaded.j3md";
+    private static final String LIGHTING = "Common/MatDefs/Light/Lighting.j3md";
+
+    private Player knight;
+    private Brute brute;
+    private EventBus eventBus = new EventBus();
 
     public static void main(String[] args) {
         new Main().start();
     }
 
-    private static final String LIGHTING = "Common/MatDefs/Light/Lighting.j3md";
-    private Player knight;
-    private Brute brute;
-    private float lastKnightHealth = -1;
-    private HealthBar knightBar;
-    private HealthBar bruteBar;
-    private EventBus eventBus = new EventBus();
-
     /**
-     * Creates a coloured box, attaches it to the scene, and returns it.
+     * Creates a coloured box, attaches it to the scene, and returns it (helper method).
      * @param name   The name of the geometry.
      * @param width  Half-width of the box.
      * @param height Half-height of the box.
@@ -37,10 +33,7 @@ public class Main extends SimpleApplication {
      * @param color  The colour of the box.
      * @return The created Geometry, so the caller can move it.
      */
-
-    // Creates a coloured box, attaches it to the scene, and returns it (Helper Method)
     private Geometry createBox(String name, float width, float height, float depth, String mat, ColorRGBA color) {
-
 
         Box box = new Box(width, height, depth);
         Geometry geometry = new Geometry(name, box);
@@ -59,14 +52,13 @@ public class Main extends SimpleApplication {
     @Override
     public void simpleInitApp() {
 
-        // Floor
         float floorHeight = 0.1f;
-        // Geometry floorGeo = createBox("Floor", 10f, floorHeight, 10f, LIGHTING, ColorRGBA.Gray);
-        // floorGeo.setShadowMode(ShadowMode.Receive);
 
+        // Config and factory are created once and shared
         GameConfig config = new GameConfig("game.properties");
-        System.out.println(config.getInt("arena.size"));
+        EnemyFactory enemyFactory = new EnemyFactory(config, eventBus, assetManager, guiNode, rootNode, settings.getHeight());
 
+        // Arena (floor, walls, pillars)
         Arena arena = new Arena(assetManager, config);
         rootNode.attachChild(arena.getRoot());
 
@@ -80,7 +72,6 @@ public class Main extends SimpleApplication {
         knight = new Player("Knight", 5f, health);
         knight.setBrain(new PlayerInputBrain(inputManager));
 
-
         knight.getNode().attachChild(knightGeo);
         knight.getNode().setLocalTranslation(0, floorHeight + knightHeight, 0);
 
@@ -92,33 +83,17 @@ public class Main extends SimpleApplication {
 
         inputManager.setCursorVisible(false);
 
-        //Brute Character
-        Health bruteHealth = new Health(100f);
-    
-        brute = new Brute("Brute", 3f, bruteHealth);
-        brute.setBrain(new BruteInputBrain(knight));
+        // Knight health bar: updates from DamageEvents on the event bus
+        HealthBar knightBar = new HealthBar(assetManager, guiNode, 10, settings.getHeight() - 30, 200, 20, knight);
+        knight.setEventBus(eventBus);
+        eventBus.subscribe(knightBar);
 
-        Geometry bruteGeo = createBox("Brute", 0.5f, knightHeight, 0.5f, LIGHTING, ColorRGBA.Red);
-        bruteGeo.setShadowMode(ShadowMode.Cast);
-        brute.getNode().attachChild(bruteGeo);
-
-        brute.getNode().setLocalTranslation(5, floorHeight + knightHeight, -5);
-        rootNode.attachChild(brute.getNode());
+        // Brute (the factory builds it and creates its health bar)
+        brute = enemyFactory.createBrute(new Vector3f(5, floorHeight + knightHeight, -5), knight);
 
         brute.addTarget(knight);
         knight.addTarget(brute);
 
-        knightBar = new HealthBar(assetManager, guiNode, 10, settings.getHeight() - 30, 200, 20, knight);
-        bruteBar = new HealthBar(assetManager, guiNode, 10, settings.getHeight() - 60, 200, 20, brute);
-
-        knight.setEventBus(eventBus);
-        brute.setEventBus(eventBus);
-
-
-        eventBus.subscribe(knightBar);
-        eventBus.subscribe(bruteBar);
-
-        
         // Directional sun light with shadows
         DirectionalLight sun = new DirectionalLight();
         sun.setDirection(new Vector3f(-1, -2, -3).normalizeLocal());
@@ -126,7 +101,7 @@ public class Main extends SimpleApplication {
         rootNode.addLight(sun);
 
         // Low-level ambient fill so shadowed areas aren't pitch black
-        AmbientLight ambient = new AmbientLight();  
+        AmbientLight ambient = new AmbientLight();
         ambient.setColor(ColorRGBA.White.mult(0.3f));
         rootNode.addLight(ambient);
 
@@ -134,36 +109,21 @@ public class Main extends SimpleApplication {
         shadowRenderer.setLight(sun);
         viewPort.addProcessor(shadowRenderer);
 
-
         flyCam.setEnabled(false);
-
-        
-
     }
 
-    // Called every frame: delegates to the knight's update logic
+    // Called every frame: updates the characters and moves the camera behind the knight
     @Override
     public void simpleUpdate(float tpf) {
         knight.update(tpf);
         brute.update(tpf);
-
-        float current = knight.getHealth().getCurrent();
-        if (current != lastKnightHealth) {
-            System.out.println("Knight Health: " + current);
-            lastKnightHealth = current;
-        }       
-
-        knightBar.setFraction(knight.getHealth().getCurrent() / knight.getHealth().getMax());
-        bruteBar.setFraction(brute.getHealth().getCurrent() / brute.getHealth().getMax());
 
         Vector3f knightPos = knight.getNode().getLocalTranslation();
         Vector3f offset = new Vector3f(0, 4, 8);
 
         offset = knight.getNode().getLocalRotation().mult(offset);
 
-
         cam.setLocation(knightPos.add(offset));
         cam.lookAt(knightPos.add(0, 1, 0), Vector3f.UNIT_Y);
-
     }
 }
